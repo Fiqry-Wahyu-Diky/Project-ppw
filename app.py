@@ -483,8 +483,8 @@ else:
                 max_acc_nb = max(accuracies_nb)
                 ind_max_acc_nb = np.argmax(accuracies_nb)
 
-                st.warning("#### Dengan menggunakan metode Naive Bayes akurasi tertinggi didapatkan sebesar:")
-                st.warning(f"Akurasi : {max_acc_nb}, Topik ke-{topik_kolom[ind_max_acc_nb]}%")
+                st.warning("###### Dengan menggunakan metode Naive Bayes akurasi tertinggi didapatkan sebesar:")
+                st.warning(f"Akurasi : {max_acc_nb}% \n Pada {topik_kolom[ind_max_acc_nb]}")
 
             # ==================== KNN ================
             if knn_ck:
@@ -512,8 +512,8 @@ else:
                 max_acc_knn = max(accuracies_knn)
                 ind_max_acc_knn = np.argmax(accuracies_knn)
 
-                st.info("#### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
-                st.info(f"Akurasi : {max_acc_knn}, Topik ke-{topik_kolom[ind_max_acc_knn]}")
+                st.info("###### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
+                st.info(f"Akurasi : {max_acc_knn}%, \n Pada {topik_kolom[ind_max_acc_knn]}")
 
 # ==================== Random Forest ================
             if rf_ck:    # Inisialisasi array untuk menyimpan akurasi
@@ -541,98 +541,108 @@ else:
                 max_acc_rf = max(accuracies_rf)
                 ind_max_acc_rf= np.argmax(accuracies_rf)
 
-            # #         ============== Grafik ============
-            #         data_accuracy_nb = accuracies_nb
-            #         topics = topik_kolom
-            #
-            #         # Membuat plot
-            #         # Menghitung jumlah data
-            #         num_data = len(data_accuracy_nb)
-            #
-            #         # Tentukan faktor skala untuk figsize berdasarkan jumlah data
-            #         scale_factor = num_data / 10  # Ganti 10 dengan angka yang sesuai
-            #
-            #         # Membuat plot dengan figsize yang disesuaikan
-            #         fig, ax = plt.subplots(figsize=(8 * scale_factor, len(data_accuracy_nb) / 2))
-            #
-            #         # Menambahkan garis yang menghubungkan titik-titik
-            #         ax.plot(topics, data_accuracy_nb, color='b', marker='o', linestyle='-')
-            #
-            #         ax.scatter(topics, data_accuracy_nb, color='b', marker='o')
-            #         ax.set_title("Visualisasi Data dengan Titik-Titik dan Keterangan Topik")
-            #         ax.set_xlabel("\n Keterangan Topik")
-            #         ax.set_ylabel("Nilai")
-            #         ax.grid(True)
-            #
-            #         # Menampilkan keterangan nilai di atas titik-titik
-            #         for i in range(len(data_accuracy_nb)):
-            #             ax.text(topics[i], data_accuracy_nb[i], f"{data_accuracy_nb[i]:.2f}", ha='center', va='bottom')
-            #
-            #         # Tampilkan plot di aplikasi Streamlit
-            #         st.pyplot(fig)
+                st.success("###### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
+                st.info(f"Akurasi : {max_acc_knn}%, \n Pada {topik_kolom[ind_max_acc_knn]}")
 
-        # ===================== Grafik Visual ====================
-        # st.markdown("---")
-        # st.write("##### Visualisasi Model")
-        # visual = pd.DataFrame({'Akurasi': [knn_accuracy, gauss_accuracy, decission3_accuracy],
-        #                        'Model': ['KNN', 'Naive-Bayes Gaussian', 'Decission Tree']})
-        # chart = alt.Chart(visual).mark_bar().encode(
-        #     y="Akurasi",
-        #     x="Model",
-        # )
-        # st.altair_chart(chart, use_container_width=True)
+        #         ============== Grafik ============
+        with akurasiApp:
+#   ======= function plot ========
+            def plot_data(data_accuracy, topics, title):
+                num_data = len(data_accuracy) # Menghitung jumlah data
+                scale_factor = num_data / 10 # Tentukan faktor skala untuk figsize berdasarkan jumlah data
 
-    # =========================== Implementasi ===============================
-    with implementasi:
-        st.write("# Implementasi")
-        st.info(
-            "Dalam melakukan pengecekan tingkat stres harus menggunakan 3 fitur data yang didapatkan dari melakukan beberapa aktivitas dan diukur menggunakan sebuah sensor. Aktivitas:")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.write("")
-        with col2:
-            st.image("aktivitas.png", use_column_width="auto")
-        with col3:
-            st.write("")
-        st.markdown("---")
-        st.write("##### Input fitur")
-        name = st.text_input("Masukkan nama anda")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            humidity_mean = st.number_input("Masukkan Rata-rata Kelembaban (10.00 - 30.00)", min_value=10.00,
-                                            max_value=30.00)
-        with col2:
-            temperature_mean = st.number_input("Masukkan rata-rata Suhu (79.00 - 99.00) Fahrenheit", min_value=79.00,
-                                               max_value=99.00)
-        with col3:
-            step_count_mean = st.number_input("Masukkan rata-rata hitungan langkah (0.00 - 200.00)", min_value=0.00,
-                                              max_value=200.00)
+                fig, ax = plt.subplots(figsize=(8 * scale_factor, len(data_accuracy) / 2)) # Membuat plot dengan figsize yang disesuaikan
+                ax.plot(topics, data_accuracy, color='b', marker='o', linestyle='-')  # Menambahkan garis yang menghubungkan titik-titik
+                ax.scatter(topics, data_accuracy, color='b', marker='o')
+                ax.set_title(title)
+                ax.set_xlabel("\n Keterangan Topik")
+                ax.set_ylabel("Nilai")
+                ax.grid(True)
 
-        cek_hasil = st.button("Cek Prediksi")
-        # ============================ Mengambil akurasi tertinggi ===========================
-        if knn_accuracy > gauss_accuracy and knn_accuracy > decission3_accuracy:
-            use_model = knn
-            metode = "KNN"
-        elif gauss_accuracy > knn_accuracy and gauss_accuracy > decission3_accuracy:
-            use_model = gaussian
-            metode = "Naive-Bayes Gaussian"
-        else:
-            use_model = decission3
-            metode = "Decission Tree"
-        # ============================ Normalisasi inputan =============================
-        inputan = [[humidity_mean, temperature_mean, step_count_mean]]
-        inputan_norm = scaler.transform(inputan)
-        # inputan
-        # inputan_norm
-        FIRST_IDX = 0
-        if cek_hasil:
-            hasil_prediksi = use_model.predict(inputan_norm)[FIRST_IDX]
-            if hasil_prediksi == 0:
-                st.success(
-                    f"{name} Terdeteksi tingkat stress tergolong Rendah, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
-            elif hasil_prediksi == 1:
-                st.warning(
-                    f"{name} Terdeteksi tingkat stress tergolong Normal, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
-            else:
-                st.error(
-                    f"{name} Terdeteksi tingkat stress tergolong Tinggi, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
+                for i in range(len(data_accuracy)):
+                    ax.text(topics[i], data_accuracy[i], f"{data_accuracy[i]:.2f}", ha='center', va='bottom')
+
+                return fig
+# ================ Nb ===========
+            # Visualisasi NB
+            data_accuracy_nb = accuracies_nb
+            topics = topik_kolom
+            fig_nb = plot_data(data_accuracy_nb, topics, "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Naive Bayes)")
+
+# ================ KNN ===========
+            # Visualisasi KNN
+            data_accuracy_knn = accuracies_knn
+            topics = topik_kolom
+            fig_knn = plot_data(data_accuracy_knn, topics,
+                                "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (KNN)")
+
+# ================ Random Forest ===========
+            # Visualisasi KNN
+            data_accuracy_rf = accuracies_rf
+            topics = topik_kolom
+            fig_rf = plot_data(data_accuracy_rf, topics,
+                                "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Random Forest)")
+
+
+# ========= Tampilkan ============
+            if nb_ck:
+                st.pyplot(fig_nb)
+            if knn_ck:
+                st.pyplot(fig_knn)
+            if rf_ck:
+                st.pyplot(fig_rf)
+
+    # # =========================== Implementasi ===============================
+    # with implementasi:
+    #     st.write("# Implementasi")
+    #     st.info(
+    #         "Dalam melakukan pengecekan tingkat stres harus menggunakan 3 fitur data yang didapatkan dari melakukan beberapa aktivitas dan diukur menggunakan sebuah sensor. Aktivitas:")
+    #     col1, col2, col3 = st.columns(3)
+    #     with col1:
+    #         st.write("")
+    #     with col2:
+    #         st.image("aktivitas.png", use_column_width="auto")
+    #     with col3:
+    #         st.write("")
+    #     st.markdown("---")
+    #     st.write("##### Input fitur")
+    #     name = st.text_input("Masukkan nama anda")
+    #     col1, col2, col3 = st.columns(3)
+    #     with col1:
+    #         humidity_mean = st.number_input("Masukkan Rata-rata Kelembaban (10.00 - 30.00)", min_value=10.00,
+    #                                         max_value=30.00)
+    #     with col2:
+    #         temperature_mean = st.number_input("Masukkan rata-rata Suhu (79.00 - 99.00) Fahrenheit", min_value=79.00,
+    #                                            max_value=99.00)
+    #     with col3:
+    #         step_count_mean = st.number_input("Masukkan rata-rata hitungan langkah (0.00 - 200.00)", min_value=0.00,
+    #                                           max_value=200.00)
+    #
+    #     cek_hasil = st.button("Cek Prediksi")
+    #     # ============================ Mengambil akurasi tertinggi ===========================
+    #     if knn_accuracy > gauss_accuracy and knn_accuracy > decission3_accuracy:
+    #         use_model = knn
+    #         metode = "KNN"
+    #     elif gauss_accuracy > knn_accuracy and gauss_accuracy > decission3_accuracy:
+    #         use_model = gaussian
+    #         metode = "Naive-Bayes Gaussian"
+    #     else:
+    #         use_model = decission3
+    #         metode = "Decission Tree"
+    #     # ============================ Normalisasi inputan =============================
+    #     inputan = [[humidity_mean, temperature_mean, step_count_mean]]
+    #     inputan_norm = scaler.transform(inputan)
+    #     # inputan
+    #     # inputan_norm
+    #     FIRST_IDX = 0
+    #     if cek_hasil:
+    #         hasil_prediksi = use_model.predict(inputan_norm)[FIRST_IDX]
+    #         if hasil_prediksi == 0:
+    #             st.success(
+    #                 f"{name} Terdeteksi tingkat stress tergolong Rendah, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
+    #         elif hasil_prediksi == 1:
+    #             st.warning(
+    #                 f"{name} Terdeteksi tingkat stress tergolong Normal, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
+    #         else:
+    #             st.error(
+    #                 f"{name} Terdeteksi tingkat stress tergolong Tinggi, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
