@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score, f1_score
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 import altair as alt
 from streamlit_option_menu import option_menu
 from sklearn.metrics import accuracy_score
@@ -448,12 +448,9 @@ else:
     # =========================== Evaluasi ==================================
     with modelling:
         modelApp, akurasiApp = st.tabs(["Modelling APP", "Akurasi Visual"])
-        st.write("# Model Akurasi")
         with modelApp:
+            st.write("ini modelling")
 # ================= create model ==============
-        # Inisialisasi array untuk menyimpan akurasi
-            accuracies_rf = []
-
             # Loop untuk setiap iterasi topik
             # Data yang Anda miliki
             X = proporsi_topik_dokumen_df.iloc[:, :k]  # Mengambil hanya kolom-kolom topik pertama hingga ke-k
@@ -463,6 +460,7 @@ else:
             knn_ck = st.checkbox("KNN")
             rf_ck = st.checkbox("Random Forest")
 
+            # ==================== naive bayes ================
             if nb_ck:
                 # Inisialisasi array untuk menyimpan akurasi
                 accuracies_nb = []
@@ -480,7 +478,68 @@ else:
                     # Hitung akurasi dan tambahkan ke array akurasi
                     accuracy = round(accuracy_score(y_test, y_pred) * 100, 2)
                     accuracies_nb.append(accuracy)
-                    st.write(accuracies_nb)
+
+                # yang paling tinggi nilainya
+                max_acc_nb = max(accuracies_nb)
+                ind_max_acc_nb = np.argmax(accuracies_nb)
+
+                st.warning("#### Dengan menggunakan metode Naive Bayes akurasi tertinggi didapatkan sebesar:")
+                st.warning(f"Akurasi : {max_acc_nb}, Topik ke-{topik_kolom[ind_max_acc_nb]}%")
+
+            # ==================== KNN ================
+            if knn_ck:
+                # Inisialisasi array untuk menyimpan akurasi
+                accuracies_knn = []
+
+                # Loop untuk setiap iterasi topik
+                for i in range(1, k + 1):
+                    # Train and Test split
+                    X_train, X_test, y_train, y_test = train_test_split(X.iloc[:, :i], y, test_size=0.3, random_state=0)
+
+                    # Inisialisasi model Naive Bayes
+                    knn = KNeighborsClassifier()
+
+                    # Latih model pada kolom topik tertentu
+                    knn.fit(X_train, y_train)
+
+                    # Lakukan prediksi
+                    y_pred = knn.predict(X_test)
+
+                    # Hitung akurasi dan tambahkan ke array akurasi
+                    accuracy = round(accuracy_score(y_test, y_pred) * 100, 2)
+                    accuracies_knn.append(accuracy)
+                # yang paling tinggi nilainya
+                max_acc_knn = max(accuracies_knn)
+                ind_max_acc_knn = np.argmax(accuracies_knn)
+
+                st.info("#### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
+                st.info(f"Akurasi : {max_acc_knn}, Topik ke-{topik_kolom[ind_max_acc_knn]}")
+
+# ==================== Random Forest ================
+            if rf_ck:    # Inisialisasi array untuk menyimpan akurasi
+                accuracies_rf = []
+
+                # Loop untuk setiap iterasi topik
+                for i in range(1, k + 1):
+                    # Train and Test split
+                    X_train, X_test, y_train, y_test = train_test_split(X.iloc[:, :i], y, test_size=0.3, random_state=0)
+
+                    # Inisialisasi model Naive Bayes
+                    rf = RandomForestClassifier()
+
+                    # Latih model pada kolom topik tertentu
+                    rf.fit(X_train, y_train)
+
+                    # Lakukan prediksi
+                    y_pred = rf.predict(X_test)
+
+                    # Hitung akurasi dan tambahkan ke array akurasi
+                    accuracy = round(accuracy_score(y_test, y_pred) * 100, 2)
+                    accuracies_rf.append(accuracy)
+
+                # yang paling tinggi nilainya
+                max_acc_rf = max(accuracies_rf)
+                ind_max_acc_rf= np.argmax(accuracies_rf)
 
             # #         ============== Grafik ============
             #         data_accuracy_nb = accuracies_nb
