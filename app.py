@@ -480,36 +480,37 @@ else:
                     # Hitung akurasi dan tambahkan ke array akurasi
                     accuracy = round(accuracy_score(y_test, y_pred) * 100, 2)
                     accuracies_nb.append(accuracy)
+                    st.write(accuracies_nb)
 
-            #         ============== Grafik ============
-                    data_accuracy_nb = accuracies_nb
-                    topics = topik_kolom
-
-                    # Membuat plot
-                    # Menghitung jumlah data
-                    num_data = len(data_accuracy_nb)
-
-                    # Tentukan faktor skala untuk figsize berdasarkan jumlah data
-                    scale_factor = num_data / 10  # Ganti 10 dengan angka yang sesuai
-
-                    # Membuat plot dengan figsize yang disesuaikan
-                    fig, ax = plt.subplots(figsize=(8 * scale_factor, len(data_accuracy_nb) / 2))
-
-                    # Menambahkan garis yang menghubungkan titik-titik
-                    ax.plot(topics, data_accuracy_nb, color='b', marker='o', linestyle='-')
-
-                    ax.scatter(topics, data_accuracy_nb, color='b', marker='o')
-                    ax.set_title("Visualisasi Data dengan Titik-Titik dan Keterangan Topik")
-                    ax.set_xlabel("\n Keterangan Topik")
-                    ax.set_ylabel("Nilai")
-                    ax.grid(True)
-
-                    # Menampilkan keterangan nilai di atas titik-titik
-                    for i in range(len(data_accuracy_nb)):
-                        ax.text(topics[i], data_accuracy_nb[i], f"{data_accuracy_nb[i]:.2f}", ha='center', va='bottom')
-
-                    # Tampilkan plot di aplikasi Streamlit
-                    st.pyplot(fig)
+            # #         ============== Grafik ============
+            #         data_accuracy_nb = accuracies_nb
+            #         topics = topik_kolom
+            #
+            #         # Membuat plot
+            #         # Menghitung jumlah data
+            #         num_data = len(data_accuracy_nb)
+            #
+            #         # Tentukan faktor skala untuk figsize berdasarkan jumlah data
+            #         scale_factor = num_data / 10  # Ganti 10 dengan angka yang sesuai
+            #
+            #         # Membuat plot dengan figsize yang disesuaikan
+            #         fig, ax = plt.subplots(figsize=(8 * scale_factor, len(data_accuracy_nb) / 2))
+            #
+            #         # Menambahkan garis yang menghubungkan titik-titik
+            #         ax.plot(topics, data_accuracy_nb, color='b', marker='o', linestyle='-')
+            #
+            #         ax.scatter(topics, data_accuracy_nb, color='b', marker='o')
+            #         ax.set_title("Visualisasi Data dengan Titik-Titik dan Keterangan Topik")
+            #         ax.set_xlabel("\n Keterangan Topik")
+            #         ax.set_ylabel("Nilai")
+            #         ax.grid(True)
+            #
+            #         # Menampilkan keterangan nilai di atas titik-titik
+            #         for i in range(len(data_accuracy_nb)):
+            #             ax.text(topics[i], data_accuracy_nb[i], f"{data_accuracy_nb[i]:.2f}", ha='center', va='bottom')
+            #
+            #         # Tampilkan plot di aplikasi Streamlit
+            #         st.pyplot(fig)
 
         # ===================== Grafik Visual ====================
         # st.markdown("---")
