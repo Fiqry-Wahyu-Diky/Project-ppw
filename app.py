@@ -447,10 +447,9 @@ else:
 
     # =========================== Evaluasi ==================================
     with modelling:
-        modelApp, akurasiApp = st.tabs(["Modelling APP, Akurasi Visual"])
+        modelApp, akurasiApp = st.tabs(["Modelling APP", "Akurasi Visual"])
         st.write("# Model Akurasi")
         with modelApp:
-
 # ================= create model ==============
         # Inisialisasi array untuk menyimpan akurasi
             accuracies_rf = []
@@ -513,15 +512,15 @@ else:
                     st.pyplot(fig)
 
         # ===================== Grafik Visual ====================
-        st.markdown("---")
-        st.write("##### Visualisasi Model")
-        visual = pd.DataFrame({'Akurasi': [knn_accuracy, gauss_accuracy, decission3_accuracy],
-                               'Model': ['KNN', 'Naive-Bayes Gaussian', 'Decission Tree']})
-        chart = alt.Chart(visual).mark_bar().encode(
-            y="Akurasi",
-            x="Model",
-        )
-        st.altair_chart(chart, use_container_width=True)
+        # st.markdown("---")
+        # st.write("##### Visualisasi Model")
+        # visual = pd.DataFrame({'Akurasi': [knn_accuracy, gauss_accuracy, decission3_accuracy],
+        #                        'Model': ['KNN', 'Naive-Bayes Gaussian', 'Decission Tree']})
+        # chart = alt.Chart(visual).mark_bar().encode(
+        #     y="Akurasi",
+        #     x="Model",
+        # )
+        # st.altair_chart(chart, use_container_width=True)
 
     # =========================== Implementasi ===============================
     with implementasi:
