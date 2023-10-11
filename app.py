@@ -409,32 +409,32 @@ else:
         a = 0.1
         b = 0.2
 
-
-        # --------------------------------------
-        lda_model = LatentDirichletAllocation(n_components=k, doc_topic_prior=a, topic_word_prior=b)
-        # Proporsi topik pada dokumen
-        proporsi_topik_dokumen = lda_model.fit_transform(dataLDA)
-
-        # simpan kolom
-        topik_kolom = []
-
-        for i in range(1, k + 1):
-            topik_kolom.append(f'Topik {i}')
-
-        proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen, columns=topik_kolom)
-
-# ============= gabungkan label data ===========
-        data_label = data['Label']
-        proporsi_topik_dokumen_df = pd.concat([proporsi_topik_dokumen_df, data_label], axis=1)
-
-        # hapus data kosong
-        proporsi_topik_dokumen_df.dropna(inplace=True)
-        
         hasil_proporsi_td = st.checkbox("Tampilkan Hasil Proporsi Topik pada Dokumen")
         if hasil_proporsi_td:
             k=nk
             a=alpha
             b=beta
+
+            # --------------------------------------
+            lda_model = LatentDirichletAllocation(n_components=k, doc_topic_prior=a, topic_word_prior=b)
+            # Proporsi topik pada dokumen
+            proporsi_topik_dokumen = lda_model.fit_transform(dataLDA)
+
+            # simpan kolom
+            topik_kolom = []
+
+            for i in range(1, k + 1):
+                topik_kolom.append(f'Topik {i}')
+
+            proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen, columns=topik_kolom)
+
+# ============= gabungkan label data ===========
+            data_label = data['Label']
+            proporsi_topik_dokumen_df = pd.concat([proporsi_topik_dokumen_df, data_label], axis=1)
+
+            # hapus data kosong
+            proporsi_topik_dokumen_df.dropna(inplace=True)
+
 
             st.info("Hasil Proporsi Topik Dokumen")
             st.write(proporsi_topik_dokumen_df)
