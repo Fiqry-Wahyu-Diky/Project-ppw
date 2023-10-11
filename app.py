@@ -543,23 +543,24 @@ else:
                 st.pyplot(fig_rf)
 
         with evaluasi:
+            st.write("# Evaluasi")
             col1, col2, col3 = st.columns(3)
     #         ==================== nb ==============
             with col1:
                 if nb_ck:
-                    eval_nb_df = pd.DataFrame(eval_nb).transpose()
+                    eval_nb_df = pd.DataFrame(eval_nb)
                     st.info("##### Evaluasi Naive Bayes")
                     st.write(eval_nb_df)
 
             with col2:
                 if knn_ck:
-                    eval_knn_df = pd.DataFrame(eval_knn).transpose()
+                    eval_knn_df = pd.DataFrame(eval_knn)
                     st.info("##### Evaluasi KNN")
                     st.write(eval_knn_df)
 
             with col3:
                 if knn_ck:
-                    eval_rf_df = pd.DataFrame(eval_knn).transpose()
+                    eval_rf_df = pd.DataFrame(eval_knn)
                     st.info("##### Evaluasi Random Forest")
                     st.write(eval_rf_df)
 
