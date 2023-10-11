@@ -494,7 +494,7 @@ else:
 
 # ==================== Random Forest ================
             if rf_ck:    # Inisialisasi array untuk menyimpan akurasi
-                max_acc_rf, best_topic_rf,accuracies_rf = train_and_evaluate_model(X, y, k, 'KNN')
+                max_acc_rf, best_topic_rf,accuracies_rf = train_and_evaluate_model(X, y, k, 'Random Forest')
                 st.success("###### Dengan menggunakan metode Random Forest akurasi tertinggi didapatkan sebesar:")
                 st.success(f"Akurasi : {max_acc_rf}%, Pada {best_topic_rf}")
 
