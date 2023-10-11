@@ -555,13 +555,13 @@ else:
             with col2:
                 if knn_ck:
                     eval_knn_df = pd.DataFrame(eval_knn)
-                    st.info("##### Evaluasi KNN")
+                    st.warning("##### Evaluasi KNN")
                     st.write(eval_knn_df)
 
             with col3:
                 if knn_ck:
                     eval_rf_df = pd.DataFrame(eval_knn)
-                    st.info("##### Evaluasi Random Forest")
+                    st.success("##### Evaluasi Random Forest")
                     st.write(eval_rf_df)
 
 
