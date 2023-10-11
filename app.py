@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import gdown
+
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -29,7 +29,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 
-# showWarningOnDirectExecution = False
+showWarningOnDirectExecution = False
 
 with st.sidebar:
     selected = option_menu(
@@ -60,12 +60,6 @@ if selected == "HOME":
         '- Reduksi Dimensi <br> <p style = "text-align: justify;"> <b>Reduksi dimensi Text</b> adalah proses mengurangi jumlah atribut (fitur) dalam suatu dataset dengan tetap mempertahankan informasi yang signifikan. Tujuan utama dari reduksi dimensi adalah untuk mengatasi masalah "kutukan dimensi" (curse of dimensionality), di mana dataset dengan banyak fitur dapat mengakibatkan masalah komputasi yang mahal dan pemodelan yang kurang akurat. Reduksi dimensi juga dapat membantu dalam memahami struktur data, menghilangkan atribut yang tidak relevan, dan memungkinkan visualisasi yang lebih baik dari data yang kompleks.</p>',
         unsafe_allow_html=True)
 
-
-# elif selected == "FITUR":
-#     st.markdown('<h1 style = "text-align: center;"> FITUR DATA </h1>', unsafe_allow_html=True)
-#     st.markdown(
-#         '<p style = "text-align: justify;">Dalam menentukan nilai yang dilakukan untuk pengklasifikasian sistem ini maka diperlukan beberapa data pada fitur-fitur yang diperlukan, terdapat 3 fitur yang digunakan sebagai parameter pengklasifikasian data, yaitu:</p><ol><b>1. Humidity (Kelembaban keringat)</b></ol><p style="text-align:justify;">Kelembaban yang digunakan yaitu Kelembaban sekresi keringat yang berhubungan dengan sistem saraf pusat, dengan menggunakan <b style ="color:red">Humidity Sensor</b> akan mengetahui kuantitas fisik yang dikeluarkan melalui pori-pori kulit dalam jumlah tertentu sebagai reaksi terhadap panas, latihan fisik dan perubahan emosi. Saat keringat tubuh meningkat, aliran arus antara dua elektroda meningkat membuat tubuh manusia efektif sebagai resistor variabel. Sensor yang mendeteksi kelembapan dapat digunakan untuk memantau tingkat sekresi keringat yang dikendalikan oleh sistem saraf pusat manusia. Memantau jumlah keringat yang dihasilkan dapat membantu menemukan tingkat stres dan gairah subjek yang dipantau. Aktivitas kelenjar keringat sebagai variabel digunakan dalam banyak aplikasi biofeedback seperti deteksi kebohongan, dan pengenalan emosi. Proses berkeringat normal disebut keringat sedangkan gangguan keringat berlebih dikenal sebagai hiperhidrosis dan berhubungan dengan emosional, stres pekerjaan dan sosial. Dalam hal ini digunakan sensor kelembaban untuk mendeteksi sekresi keringat pada telapak tangan.</p> <ol><b>2. Temperature (Suhu tubuh)</b></ol> <p style="text-align:justify">Tingkat suhu adalah tingkat variasi suhu tubuh dalam jumlah waktu tertentu. Secara umum, sensor suhu dapat diklasifikasikan dalam 2 jenis: Sensor suhu kontak yang mengukur suhu saat diletakkan di tubuh dan sensor non-kontak yang mengukur radiasi infra merah atau optik yang diterima dari area tubuh mana pun. Untuk mengukur suhu tubuh mnggunakan <b style ="color:red">sensor suhu kontak</b> yang dapat memantau laju variasi suhu tubuh.</p> <ol><b>3. Step count (Jumlah langkah)</b></ol><p style="text-align:justify">Dengan melakukan sebuah aktivitas maka dapat mempengaruhi stres pada manusia, untuk mengukur laju perubahan kecepatan suatu benda digunakan <b style ="color:red">sensor akselerometer</b>. Yang terdiri dari tiga akselerometer terpisah yang dipasang secara ortogonal pada sistem 3 sumbu fisik (x,y, danz). Gaya yang menyebabkan percepatan bisa statis atau dinamis.yang diukur dalam meter per detik persegi (m/s2)</p>',
-#         unsafe_allow_html=True)
 
 else:
     st.markdown('<h1 style = "text-align: center;">Text Processing</h1>', unsafe_allow_html=True)
@@ -117,7 +111,7 @@ else:
                         })
 
 
-                # Menampilkan hasil crawling
+# ================== Menampilkan hasil crawling ====================
                 if datas:
                     df_datas = pd.DataFrame(datas)
                     st.success("Data telah selesai dicrawling")
@@ -352,7 +346,7 @@ else:
             tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
 
 
-            # =========== memilih
+            # =========== memilih ===============
 
             if binary_ck:
                 st.info("#### Binary")
