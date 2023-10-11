@@ -36,7 +36,7 @@ with st.sidebar:
         menu_title="MENU",
         options=["HOME", "PROJECT"],
     )
-
+# ====================== Home ====================
 if selected == "HOME":
     st.markdown('<h1 style = "text-align: center;"> Text Processing </h1>', unsafe_allow_html=True)
     # gambar = Image.open("nlp.jpg")
@@ -60,13 +60,14 @@ if selected == "HOME":
         '- Reduksi Dimensi <br> <p style = "text-align: justify;"> <b>Reduksi dimensi Text</b> adalah proses mengurangi jumlah atribut (fitur) dalam suatu dataset dengan tetap mempertahankan informasi yang signifikan. Tujuan utama dari reduksi dimensi adalah untuk mengatasi masalah "kutukan dimensi" (curse of dimensionality), di mana dataset dengan banyak fitur dapat mengakibatkan masalah komputasi yang mahal dan pemodelan yang kurang akurat. Reduksi dimensi juga dapat membantu dalam memahami struktur data, menghilangkan atribut yang tidak relevan, dan memungkinkan visualisasi yang lebih baik dari data yang kompleks.</p>',
         unsafe_allow_html=True)
 
-
+# ====================== Project ====================
 else:
     st.markdown('<h1 style = "text-align: center;">Text Processing</h1>', unsafe_allow_html=True)
     st.write("Oleh | FIQRY WAHYU DIKY W | 200411100125")
     crawling, preprocessing, lda, modelling = st.tabs(
 ["Crawling", "Preprocessing", "Reduksi LDA", "Modeling"])
-# =============================================================================
+
+# ====================== Crawling ====================
     with crawling:
         dataset, keterangan = st.tabs(["Link data", "Keterangan"])
         with dataset:
@@ -110,7 +111,6 @@ else:
                             'Abstrak': abstrak
                         })
 
-
 # ================== Menampilkan hasil crawling ====================
                 if datas:
                     df_datas = pd.DataFrame(datas)
@@ -129,7 +129,7 @@ else:
                 else:
                     st.warning("Tidak ada Hasil Crawling")
 
-
+# ================== Tab keterangan ====================
         with keterangan:
             columns = ["Prodi","Kata Kunci", "Number Link"]
             data = [
@@ -157,7 +157,6 @@ else:
 
             st.info("#### Fakultas Teknik:")
             st.table(df_link.iloc[6:9])
-
 
 
 # ======================= Preprocessing =================================
@@ -250,7 +249,7 @@ else:
             data['tokens'] = data['abstrak_stopword'].apply(word_tokenize)
             st.write(data)
 
-#     ============== stemming ========================
+# ================ stemming ========================
             st.warning("Apakah ingin melakukan stemming? Jika iya maka centang")
             st.write("mungkin memebutuhkan waktu beberapa menit!!!")
             stemming_ck = st.checkbox("Stemming data")
@@ -275,7 +274,7 @@ else:
                     data.at[index, 'stemmed_tokens'] = stemmed_tokens
                 st.info("#### Stemming sudah dilakukan")
 
-            # ===== merge
+# =============== merge ==================
             # menggabungkan kata
             st.info("#### Menggabungkan kata")
             if stemming_ck:
@@ -427,7 +426,7 @@ else:
 
             proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen, columns=topik_kolom)
 
-            # ============= gabungkan label data ===========
+# ============= gabungkan label data ===========
             data_label = data['Label']
             proporsi_topik_dokumen_df = pd.concat([proporsi_topik_dokumen_df, data_label], axis=1)
 
@@ -441,7 +440,7 @@ else:
 
 # =========================== Modelling ==================================
     with modelling:
-        modelApp, akurasiApp = st.tabs(["Modelling APP", "Akurasi Visual"])
+        modelApp, akurasiApp, evaluasi = st.tabs(["Modelling APP", "Akurasi Visual","Evaluasi"])
         with modelApp:
 # ================= create model ==============
             # Loop untuk setiap iterasi topik
@@ -455,6 +454,7 @@ else:
             # ==================== function ==================
             def train_and_evaluate_model(X, y, k, model_type):
                 accuracies = []
+                reports = []
 
                 for i in range(1, k + 1):
                     X_train, X_test, y_train, y_test = train_test_split(X.iloc[:, :i], y, test_size=0.3, random_state=0)
@@ -470,32 +470,36 @@ else:
                     accuracy = round(accuracy_score(y_test, y_pred) * 100, 2)
                     accuracies.append(accuracy)
 
+                    # Hitung laporan evaluasi
+                    report = classification_report(y_test, y_pred)
+                    reports.append(report)
+
                 max_acc = max(accuracies)
                 ind_max_acc = np.argmax(accuracies)
 
-                return max_acc, topik_kolom[ind_max_acc],accuracies
+                return max_acc, topik_kolom[ind_max_acc],accuracies,reports
             # ==================== naive bayes ================
             if nb_ck:
-                max_acc_nb, best_topic_nb,accuracies_nb = train_and_evaluate_model(X, y, k, 'Naive Bayes')
+                max_acc_nb, best_topic_nb,accuracies_nb,eval_nb = train_and_evaluate_model(X, y, k, 'Naive Bayes')
                 st.info("###### Dengan menggunakan metode Naive Bayes akurasi tertinggi didapatkan sebesar:")
                 st.info(f"Akurasi : {max_acc_nb}%, Pada {best_topic_nb}")
 
             # ==================== KNN ================
             if knn_ck:
-                max_acc_knn, best_topic_knn,accuracies_knn = train_and_evaluate_model(X, y, k, 'KNN')
+                max_acc_knn, best_topic_knn,accuracies_knn,eval_knn = train_and_evaluate_model(X, y, k, 'KNN')
                 st.warning("###### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
                 st.warning(f"Akurasi : {max_acc_knn}%, Pada {best_topic_knn}")
 
-# ==================== Random Forest ================
+            # ================ Random Forest =========
             if rf_ck:    # Inisialisasi array untuk menyimpan akurasi
-                max_acc_rf, best_topic_rf,accuracies_rf = train_and_evaluate_model(X, y, k, 'Random Forest')
+                max_acc_rf, best_topic_rf,accuracies_rf,eval_rf = train_and_evaluate_model(X, y, k, 'Random Forest')
                 st.success("###### Dengan menggunakan metode Random Forest akurasi tertinggi didapatkan sebesar:")
                 st.success(f"Akurasi : {max_acc_rf}%, Pada {best_topic_rf}")
 
 
-#         ============== Grafik ============
+#   ================= Grafik ============
         with akurasiApp:
-#   ======= function plot ========
+            #   ======= function plot ========
             def plot_data(data_accuracy, topics, title):
                 num_data = len(data_accuracy) # Menghitung jumlah data
                 scale_factor = num_data / 10 # Tentukan faktor skala untuk figsize berdasarkan jumlah data
@@ -538,7 +542,26 @@ else:
                                     "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Random Forest)")
                 st.pyplot(fig_rf)
 
+        with evaluasi:
+            col1, col2, col3 = st.columns(3)
+    #         ==================== nb ==============
+            with col1:
+                if nb_ck:
+                    eval_nb_df = pd.DataFrame(eval_nb).transpose()
+                    st.info("##### Evaluasi Naive Bayes")
+                    st.write(eval_nb_df)
 
+            with col2:
+                if knn_ck:
+                    eval_knn_df = pd.DataFrame(eval_knn).transpose()
+                    st.info("##### Evaluasi KNN")
+                    st.write(eval_knn_df)
+
+            with col3:
+                if knn_ck:
+                    eval_rf_df = pd.DataFrame(eval_knn).transpose()
+                    st.info("##### Evaluasi Random Forest")
+                    st.write(eval_rf_df)
 
 
 
