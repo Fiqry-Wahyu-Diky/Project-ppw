@@ -498,7 +498,8 @@ else:
                 st.success("###### Dengan menggunakan metode Random Forest akurasi tertinggi didapatkan sebesar:")
                 st.success(f"Akurasi : {max_acc_rf}%, Pada {best_topic_rf}")
 
-        #         ============== Grafik ============
+
+#         ============== Grafik ============
         with akurasiApp:
 #   ======= function plot ========
             def plot_data(data_accuracy, topics, title):
@@ -518,33 +519,34 @@ else:
 
                 return fig
 # ================ Nb ===========
-            # Visualisasi NB
-            data_accuracy_nb = accuracies_nb
-            topics = topik_kolom
-            fig_nb = plot_data(data_accuracy_nb, topics, "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Naive Bayes)")
+            if nb_ck:
+                # Visualisasi NB
+                data_accuracy_nb = accuracies_nb
+                topics = topik_kolom
+                fig_nb = plot_data(data_accuracy_nb, topics, "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Naive Bayes)")
+                st.pyplot(fig_nb)
 
 # ================ KNN ===========
-            # Visualisasi KNN
-            data_accuracy_knn = accuracies_knn
-            topics = topik_kolom
-            fig_knn = plot_data(data_accuracy_knn, topics,
-                                "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (KNN)")
+            if knn_ck:
+                # Visualisasi KNN
+                data_accuracy_knn = accuracies_knn
+                topics = topik_kolom
+                fig_knn = plot_data(data_accuracy_knn, topics,
+                                    "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (KNN)")
+                st.pyplot(fig_knn)
 
 # ================ Random Forest ===========
-            # Visualisasi KNN
-            data_accuracy_rf = accuracies_rf
-            topics = topik_kolom
-            fig_rf = plot_data(data_accuracy_rf, topics,
-                                "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Random Forest)")
-
-
-# ========= Tampilkan ============
-            if nb_ck:
-                st.pyplot(fig_nb)
-            if knn_ck:
-                st.pyplot(fig_knn)
             if rf_ck:
+                # Visualisasi KNN
+                data_accuracy_rf = accuracies_rf
+                topics = topik_kolom
+                fig_rf = plot_data(data_accuracy_rf, topics,
+                                    "Visualisasi Data dengan Titik-Titik dan Keterangan Topik (Random Forest)")
                 st.pyplot(fig_rf)
+
+
+
+
 
     # # =========================== Implementasi ===============================
     # with implementasi:
