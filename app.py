@@ -479,22 +479,22 @@ else:
                 max_acc = max(accuracies)
                 ind_max_acc = np.argmax(accuracies)
 
-                return max_acc, topik_kolom[ind_max_acc]
+                return max_acc, topik_kolom[ind_max_acc],accuracies
             # ==================== naive bayes ================
             if nb_ck:
-                max_acc_nb, best_topic_nb = train_and_evaluate_model(X, y, k, 'Naive Bayes')
+                max_acc_nb, best_topic_nb,accuracies_nb = train_and_evaluate_model(X, y, k, 'Naive Bayes')
                 st.info("###### Dengan menggunakan metode Naive Bayes akurasi tertinggi didapatkan sebesar:")
                 st.info(f"Akurasi : {max_acc_nb}%, Pada {best_topic_nb}")
 
             # ==================== KNN ================
             if knn_ck:
-                max_acc_knn, best_topic_knn = train_and_evaluate_model(X, y, k, 'KNN')
+                max_acc_knn, best_topic_knn,accuracies_knn = train_and_evaluate_model(X, y, k, 'KNN')
                 st.warning("###### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
                 st.warning(f"Akurasi : {max_acc_knn}%, Pada {best_topic_knn}")
 
 # ==================== Random Forest ================
             if rf_ck:    # Inisialisasi array untuk menyimpan akurasi
-                max_acc_rf, best_topic_rf = train_and_evaluate_model(X, y, k, 'KNN')
+                max_acc_rf, best_topic_rf,accuracies_rf = train_and_evaluate_model(X, y, k, 'KNN')
                 st.success("###### Dengan menggunakan metode Random Forest akurasi tertinggi didapatkan sebesar:")
                 st.success(f"Akurasi : {max_acc_rf}%, Pada {best_topic_rf}")
 
