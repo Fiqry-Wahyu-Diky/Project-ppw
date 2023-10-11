@@ -8,6 +8,8 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score, f1_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import altair as alt
 from streamlit_option_menu import option_menu
@@ -244,7 +246,7 @@ else:
                                                                              regex=True)  # rf untuk formating string
             st.write(data)
 
-            # ====== tokenizing
+# ================== tokenizing =================
             st.info("#### Tokenizing")
             data['tokens'] = data['abstrak_stopword'].apply(word_tokenize)
             st.write(data)
@@ -283,7 +285,7 @@ else:
                 data['final_abstrak'] = data['tokens'].apply(lambda x: ' '.join(x))
             st.write(data)
 
-# ============ VSM ============
+# ============ VSM =========================
         with vsm:
             st.warning("Anda harus memilih satu untuk proses LDA")
             binary_ck = st.checkbox("Binary")
@@ -447,6 +449,8 @@ else:
             # Data yang Anda miliki
             X = proporsi_topik_dokumen_df.iloc[:, :k]  # Mengambil hanya kolom-kolom topik pertama hingga ke-k
             y = proporsi_topik_dokumen_df['Label']
+            label_encode = LabelEncoder()
+            y = label_encode.fit_transform(y)
 
             nb_ck = st.checkbox("Naive Bayes")
             knn_ck = st.checkbox("KNN")
