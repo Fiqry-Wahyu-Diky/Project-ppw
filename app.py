@@ -405,9 +405,9 @@ else:
         beta = st.number_input("Masukkan nilai beta :",value=0.2)
 
         # ========== kondisi data
-        k = 0
-        a = 0
-        b = 0
+        k = 1
+        a = 0.1
+        b = 0.2
 
         hasil_proporsi_td = st.checkbox("Tampilkan Hasil Proporsi Topik pada Dokumen")
         if hasil_proporsi_td:
