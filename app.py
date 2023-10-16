@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-
+import joblib
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -66,8 +66,8 @@ if selected == "HOME":
 else:
     st.markdown('<h1 style = "text-align: center;">Text Processing</h1>', unsafe_allow_html=True)
     st.write("Oleh | FIQRY WAHYU DIKY W | 200411100125")
-    crawling, preprocessing, lda, modelling = st.tabs(
-["Crawling", "Preprocessing", "Reduksi LDA", "Modeling"])
+    crawling, preprocessing, lda, modelling, implementasi = st.tabs(
+["Crawling", "Preprocessing", "Reduksi LDA", "Modeling","Implementasi"])
 
 # ====================== Crawling ====================
     with crawling:
@@ -287,12 +287,6 @@ else:
 
 # ============ VSM =========================
         with vsm:
-            st.warning("Anda harus memilih satu untuk proses LDA")
-            binary_ck = st.checkbox("Binary")
-            tf_ck = st.checkbox("Term Frequensi")
-            log_tf_ck = st.checkbox("Log Term Frequensi")
-            tfidf_ck = st.checkbox("TF-IDF")
-
 # ============================ binary ====================
             # Inisialisasi OneHotEncoder
             encoder = OneHotEncoder()
@@ -308,6 +302,9 @@ else:
 
             # Membuat DataFrame dari hasil one-hot encoding
             one_hot_df = pd.DataFrame(one_hot_encoded.toarray(), columns=fitur_names)
+            st.info("#### Binary")
+            # Cetak DataFrame one-hot encoded
+            st.write(one_hot_df)
 
 # ============================ TF ====================
             # Inisialisasi DataFrame untuk Term Frequency (TF)
@@ -321,6 +318,8 @@ else:
 
             # Membuat DataFrame dari hasil TF
             tf_df = pd.DataFrame(tf_matrix.toarray(), columns=vectorizer.get_feature_names_out())
+            st.info("#### Term Frequensi")
+            st.write(tf_df)
 
 # ============================ Log-TF ====================
             # Inisialisasi CountVectorizer
@@ -335,6 +334,9 @@ else:
             # Membuat DataFrame dari hasil log-TF
             log_tf_df = pd.DataFrame(log_tf_matrix.toarray(), columns=vectorizer.get_feature_names_out())
 
+            st.info("#### Log Term Frequensi")
+            st.write(log_tf_df)
+
 # ============================ TFIDF ====================
             from sklearn.feature_extraction.text import TfidfVectorizer
             # Inisialisasi TfidfVectorizer
@@ -345,31 +347,8 @@ else:
 
             # Membuat DataFrame dari hasil TF-IDF
             tfidf_df = pd.DataFrame(tfidf_matrix.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
-
-
-            # =========== memilih ===============
-
-            if binary_ck:
-                st.info("#### Binary")
-                # Cetak DataFrame one-hot encoded
-                st.write(one_hot_df)
-                dataLDA = one_hot_df
-            elif tf_ck:
-                st.info("#### Term Frequensi")
-                st.write(tf_df)
-                dataLDA = tf_df
-            elif log_tf_ck:
-                st.info("#### Log Term Frequensi")
-                st.write(log_tf_df)
-                dataLDA = log_tf_df
-            elif tfidf_ck:
-                st.info("#### TFIDF")
-                st.write(tfidf_df)
-                dataLDA = tfidf_df
-            else:
-                st.warning("Anda belum memilih VSM")
-            # ============================ binary ====================
-
+            st.info("#### TFIDF")
+            st.write(tfidf_df)
 
 
 
@@ -379,22 +358,38 @@ else:
         # requirements
         from sklearn.decomposition import LatentDirichletAllocation
 
+        st.warning("Anda harus memilih satu untuk proses LDA")
+        reduksi = st.radio("",["Binary","Term frequensi","Log Term Frequensi","TF-IDF"])
+        # binary_ck = st.checkbox("Binary")
+        # tf_ck = st.checkbox("Term Frequensi")
+        # log_tf_ck = st.checkbox("Log Term Frequensi")
+        # tfidf_ck = st.checkbox("TF-IDF")
+
         st.write("# LDA")
         st.write("Merupakan salah satu metode untuk mereduksi dimensi")
-        if binary_ck:
+        if reduksi == "Binary":
             st.info("#### Data yang digunakan data VSM Binary")
+            dataLDA = one_hot_df
             st.write(dataLDA)
-        elif tf_ck:
+            namereduksi = "Binary"
+        elif reduksi == "Term frequensi":
             st.info("#### Data yang digunakan data VSM Term Frequensi")
+            dataLDA = tf_df
             st.write(dataLDA)
-        elif log_tf_ck:
+            namereduksi = "Term frequensi"
+        elif reduksi == "Log Term Frequensi":
             st.info("#### Data yang digunakan data VSM Log Term Frequensi")
+            dataLDA = log_tf_df
             st.write(dataLDA)
-        elif tfidf_ck:
+            namereduksi = "Log Term Frequensi"
+        elif reduksi == "TF-IDF":
             st.info("#### Data yang digunakan data VSM TFIDF")
+            dataLDA = tfidf_df
             st.write(dataLDA)
+            namereduksi = "TF-IDF"
         else:
             st.warning("Anda belum memilih VSM")
+            st.stop()
 
 
 # ==================== proses LDA ====================
@@ -415,35 +410,51 @@ else:
             a=alpha
             b=beta
 
-            # --------------------------------------
-            lda_model = LatentDirichletAllocation(n_components=k, doc_topic_prior=a, topic_word_prior=b)
-            # Proporsi topik pada dokumen
-            proporsi_topik_dokumen = lda_model.fit_transform(dataLDA)
+        # --------------------------------------
+        lda_model = LatentDirichletAllocation(n_components=k, doc_topic_prior=a, topic_word_prior=b)
 
-            # simpan kolom
-            topik_kolom = []
+# ======== Proporsi topik pada dokumen =========
+        proporsi_topik_dokumen = lda_model.fit_transform(dataLDA)
 
-            for i in range(1, k + 1):
-                topik_kolom.append(f'Topik {i}')
+        # simpan kolom
+        topik_kolom = []
 
-            proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen, columns=topik_kolom)
+        for i in range(1, k + 1):
+            topik_kolom.append(f'Topik {i}')
+
+        proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen, columns=topik_kolom)
+
+
 
 # ============= gabungkan label data ===========
-            data_label = data['Label']
-            proporsi_topik_dokumen_df = pd.concat([proporsi_topik_dokumen_df, data_label], axis=1)
+        data_label = data['Label']
+        proporsi_topik_dokumen_df = pd.concat([proporsi_topik_dokumen_df, data_label], axis=1)
 
-            # hapus data kosong
-            proporsi_topik_dokumen_df.dropna(inplace=True)
+        # hapus data kosong
+        proporsi_topik_dokumen_df.dropna(inplace=True)
 
+        # ========= proporsi kata topik ===========
+        # Proporsi kata pada topik
+        fitur = dataLDA.columns.tolist()
+        ProporsiKataTopik = lda_model.components_
+        ProporsiKataTopik_df = pd.DataFrame(ProporsiKataTopik, columns=fitur)
+        ProporsiKataTopik_df.insert(0, 'Topik', topik_kolom)
 
+        if hasil_proporsi_td:
             st.info("Hasil Proporsi Topik Dokumen")
             st.write(proporsi_topik_dokumen_df)
 
+            st.info("Hasil Proporsi Kata Topik")
+            st.write(ProporsiKataTopik_df)
 
 # =========================== Modelling ==================================
     with modelling:
         modelApp, akurasiApp, evaluasi = st.tabs(["Modelling APP", "Akurasi Visual","Evaluasi"])
         with modelApp:
+            if not hasil_proporsi_td:
+                st.warning("Anda belum memilih menampilkan hasil Proporsi")
+                st.stop()
+
 # ================= create model ==============
             # Loop untuk setiap iterasi topik
             # Data yang Anda miliki
@@ -455,7 +466,9 @@ else:
             nb_ck = st.checkbox("Naive Bayes")
             knn_ck = st.checkbox("KNN")
             rf_ck = st.checkbox("Random Forest")
-            # ==================== function ==================
+
+# ==================== function ==================
+#       ---------------- NB --------------
             def train_and_evaluate_model(X, y, k, model_type):
                 accuracies = []
                 reports = []
@@ -481,24 +494,43 @@ else:
                 max_acc = max(accuracies)
                 ind_max_acc = np.argmax(accuracies)
 
-                return max_acc, topik_kolom[ind_max_acc],accuracies,reports
+                # Inisialisasi model-model
+                models = {}
+
+                if model_type == 'Naive Bayes':
+                    models['Naive Bayes'] = model
+                elif model_type == 'KNN':
+                    models['KNN'] = model
+                else:
+                    models['Random Forest'] = model
+
+                # # Setelah pelatihan model, simpan model ke dalam file
+                # trained_model = models[model_name]
+                # joblib.dump(trained_model, f"{model_name}_model.pkl")
+
+                return max_acc, ind_max_acc,accuracies,reports,models
             # ==================== naive bayes ================
+            max_acc_nb, best_topic_nb, accuracies_nb, eval_nb, model_nb = train_and_evaluate_model(X, y, k,
+                                                                                                   'Naive Bayes')
             if nb_ck:
-                max_acc_nb, best_topic_nb,accuracies_nb,eval_nb = train_and_evaluate_model(X, y, k, 'Naive Bayes')
                 st.info("###### Dengan menggunakan metode Naive Bayes akurasi tertinggi didapatkan sebesar:")
-                st.info(f"Akurasi : {max_acc_nb}%, Pada {best_topic_nb}")
+                st.info(f"Akurasi : {max_acc_nb}%, Pada {topik_kolom[best_topic_nb]}")
+                # st.write(model_nb)
 
             # ==================== KNN ================
+            max_acc_knn, best_topic_knn, accuracies_knn, eval_knn, model_knn = train_and_evaluate_model(X, y, k, 'KNN')
             if knn_ck:
-                max_acc_knn, best_topic_knn,accuracies_knn,eval_knn = train_and_evaluate_model(X, y, k, 'KNN')
                 st.warning("###### Dengan menggunakan metode KNN akurasi tertinggi didapatkan sebesar:")
-                st.warning(f"Akurasi : {max_acc_knn}%, Pada {best_topic_knn}")
+                st.warning(f"Akurasi : {max_acc_knn}%, Pada {topik_kolom[best_topic_knn]}")
+                # st.write(model_knn)
 
             # ================ Random Forest =========
+            max_acc_rf, best_topic_rf, accuracies_rf, eval_rf, model_rf = train_and_evaluate_model(X, y, k,
+                                                                                                   'Random Forest')
             if rf_ck:    # Inisialisasi array untuk menyimpan akurasi
-                max_acc_rf, best_topic_rf,accuracies_rf,eval_rf = train_and_evaluate_model(X, y, k, 'Random Forest')
                 st.success("###### Dengan menggunakan metode Random Forest akurasi tertinggi didapatkan sebesar:")
-                st.success(f"Akurasi : {max_acc_rf}%, Pada {best_topic_rf}")
+                st.success(f"Akurasi : {max_acc_rf}%, Pada {topik_kolom[best_topic_rf]}")
+                # st.write(model_rf)
 
 
 #   ================= Grafik ============
@@ -548,79 +580,203 @@ else:
 
         with evaluasi:
             st.write("# Evaluasi")
-            col1, col2, col3 = st.columns(3)
     #         ==================== nb ==============
-            with col1:
-                if nb_ck:
-                    eval_nb_df = pd.DataFrame(eval_nb)
-                    st.info("##### Evaluasi Naive Bayes")
-                    st.write(eval_nb_df)
+            if nb_ck:
+                eval_nb_df = pd.DataFrame(eval_nb)
+                st.info("##### Evaluasi Naive Bayes")
+                st.dataframe(eval_nb_df)
 
-            with col2:
-                if knn_ck:
-                    eval_knn_df = pd.DataFrame(eval_knn)
-                    st.warning("##### Evaluasi KNN")
-                    st.write(eval_knn_df)
+            if knn_ck:
+                eval_knn_df = pd.DataFrame(eval_knn)
+                st.warning("##### Evaluasi KNN")
+                st.dataframe(eval_knn_df)
 
-            with col3:
-                if knn_ck:
-                    eval_rf_df = pd.DataFrame(eval_knn)
-                    st.success("##### Evaluasi Random Forest")
-                    st.write(eval_rf_df)
+            if rf_ck:
+                eval_rf_df = pd.DataFrame(eval_rf)
+                st.success("##### Evaluasi Random Forest")
+                st.dataframe(eval_rf_df)
+
+# ============== ambil yang akurasinya tertinggi ==============
+        # Di bagian berikut, Anda perlu memilih model terbaik berdasarkan akurasi tertinggi yang Anda hitung
+        if max_acc_nb > max_acc_knn  and max_acc_nb > max_acc_rf:
+            namemethod = "Naive Bayes"
+            model_name = 'Naive Bayes'
+            best_topik = best_topic_nb
+            # best_model = model_nb['Naive Bayes']
+        elif max_acc_knn > max_acc_nb and max_acc_knn > max_acc_rf:
+            namemethod = "KNN"
+            model_name = 'KNN'
+            best_topik = best_topic_knn
+            # best_model = model_knn['KNN']
+        else:
+            namemethod = "Random Forest"
+            model_name = 'Random Forest'
+            best_topik = best_topic_rf
+            # best_model = model_rf['Random Forest']
 
 
+    # =========================== Implementasi ===============================
+    with implementasi:
+        st.write("# Implementasi")
+        st.info(f"Dalam implementasi akan digunakan metode yang paling tinggi akurasinya (dalam evaluasi) yaitu: metode {namemethod}, dan menggunakan {best_topik+1} Topik")
+        inp = st.text_input("Masukkan abstrak")
+        st.warning(f"Anda menggunakan VSM {namereduksi}")
 
-    # # =========================== Implementasi ===============================
-    # with implementasi:
-    #     st.write("# Implementasi")
-    #     st.info(
-    #         "Dalam melakukan pengecekan tingkat stres harus menggunakan 3 fitur data yang didapatkan dari melakukan beberapa aktivitas dan diukur menggunakan sebuah sensor. Aktivitas:")
-    #     col1, col2, col3 = st.columns(3)
-    #     with col1:
-    #         st.write("")
-    #     with col2:
-    #         st.image("aktivitas.png", use_column_width="auto")
-    #     with col3:
-    #         st.write("")
-    #     st.markdown("---")
-    #     st.write("##### Input fitur")
-    #     name = st.text_input("Masukkan nama anda")
-    #     col1, col2, col3 = st.columns(3)
-    #     with col1:
-    #         humidity_mean = st.number_input("Masukkan Rata-rata Kelembaban (10.00 - 30.00)", min_value=10.00,
-    #                                         max_value=30.00)
-    #     with col2:
-    #         temperature_mean = st.number_input("Masukkan rata-rata Suhu (79.00 - 99.00) Fahrenheit", min_value=79.00,
-    #                                            max_value=99.00)
-    #     with col3:
-    #         step_count_mean = st.number_input("Masukkan rata-rata hitungan langkah (0.00 - 200.00)", min_value=0.00,
-    #                                           max_value=200.00)
-    #
-    #     cek_hasil = st.button("Cek Prediksi")
-    #     # ============================ Mengambil akurasi tertinggi ===========================
-    #     if knn_accuracy > gauss_accuracy and knn_accuracy > decission3_accuracy:
-    #         use_model = knn
-    #         metode = "KNN"
-    #     elif gauss_accuracy > knn_accuracy and gauss_accuracy > decission3_accuracy:
-    #         use_model = gaussian
-    #         metode = "Naive-Bayes Gaussian"
-    #     else:
-    #         use_model = decission3
-    #         metode = "Decission Tree"
-    #     # ============================ Normalisasi inputan =============================
-    #     inputan = [[humidity_mean, temperature_mean, step_count_mean]]
-    #     inputan_norm = scaler.transform(inputan)
-    #     # inputan
-    #     # inputan_norm
-    #     FIRST_IDX = 0
-    #     if cek_hasil:
-    #         hasil_prediksi = use_model.predict(inputan_norm)[FIRST_IDX]
-    #         if hasil_prediksi == 0:
-    #             st.success(
-    #                 f"{name} Terdeteksi tingkat stress tergolong Rendah, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
-    #         elif hasil_prediksi == 1:
-    #             st.warning(
-    #                 f"{name} Terdeteksi tingkat stress tergolong Normal, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
-    #         else:
-    #             st.error(
-    #                 f"{name} Terdeteksi tingkat stress tergolong Tinggi, dengan tingkat = {hasil_prediksi} Berdasarkan metode {metode}")
+# ============ LDA ===============
+        # --------------------------------------
+        k_best = best_topik+1
+        lda_model_new = LatentDirichletAllocation(n_components=k_best, doc_topic_prior=a, topic_word_prior=b)
+
+        # ======== Proporsi topik pada dokumen =========
+        proporsi_topik_dokumen_new = lda_model_new.fit_transform(dataLDA)
+
+        # simpan kolom
+        topik_kolom_new = []
+
+        for i in range(1, k_best + 1):
+            topik_kolom_new.append(f'Topik {i}')
+
+        proporsi_topik_dokumen_df_new = pd.DataFrame(proporsi_topik_dokumen_new, columns=topik_kolom_new)
+
+        # ============= gabungkan label data ===========
+        data_label = data['Label']
+        proporsi_topik_dokumen_df_new = pd.concat([proporsi_topik_dokumen_df_new, data_label], axis=1)
+
+        # hapus data kosong
+        proporsi_topik_dokumen_df_new.dropna(inplace=True)
+        st.write(proporsi_topik_dokumen_df_new)
+
+        # ========= proporsi kata topik ===========
+        # Proporsi kata pada topik
+        fitur_new = dataLDA.columns.tolist()
+        ProporsiKataTopik_new = lda_model_new.components_
+        ProporsiKataTopik_df_new = pd.DataFrame(ProporsiKataTopik_new, columns=fitur)
+        ProporsiKataTopik_df_new.insert(0, 'Topik', topik_kolom_new)
+
+# ============ vectorizer dulu ============
+        # coun_vect = CountVectorizer()
+        vectorizer = CountVectorizer()
+        count_matrix_inp = vectorizer.fit_transform([inp])
+        count_array_inp = count_matrix_inp.toarray()
+        df_countMatrix_inp = pd.DataFrame(data=count_array_inp, columns=vectorizer.vocabulary_.keys())
+#
+# ============== binary ========
+        # Inisialisasi encoder OHE
+        encoder = OneHotEncoder()
+        one_hot_encoded_inp = encoder.fit_transform(df_countMatrix_inp)
+
+        # Mendapatkan nama fitur (kolom)
+        fitur_names = encoder.get_feature_names_out()
+
+        # Membuat DataFrame dari hasil one-hot encoding
+        one_hot_inp_df = pd.DataFrame(one_hot_encoded_inp.toarray(), columns=fitur_names)
+#
+# ============= term freq inp ===============
+        # Melakukan one-hot encoding pada kolom 'final_abstrak'
+        tf_inp = vectorizer.fit_transform([inp])
+
+        # Mendapatkan nama fitur (kolom)
+        fitur_names = vectorizer.get_feature_names_out()
+
+        # Membuat DataFrame dari hasil one-hot encoding
+        tf_inp_df = pd.DataFrame(tf_inp.toarray(), columns=fitur_names)
+
+# ============= log tf ============
+        # Menghitung log-TF dengan logaritma natural (ln)
+        log_tf_matrix_inp = np.log1p(tf_inp)
+
+        # Membuat DataFrame dari hasil log-TF
+        log_tf_df_inp = pd.DataFrame(log_tf_matrix_inp.toarray(), columns=vectorizer.get_feature_names_out())
+
+# -----------------------------------------------
+        if reduksi == "Binary":
+            st.info("#### Binary")
+            # Cetak DataFrame one-hot encoded
+            st.write(one_hot_inp_df)
+            vsm_inp = one_hot_inp_df
+        elif reduksi == "Term frequensi":
+            st.info("#### Term Frequensi")
+            # Cetak DataFrame tf
+            st.write(tf_inp_df)
+            vsm_inp = tf_inp_df
+        elif reduksi == "Log Term Frequensi":
+            st.info("#### Log Term Frequensi")
+            st.write(log_tf_df_inp)
+            vsm_inp = log_tf_df_inp
+        else:
+            # Melakukan transformasi TF-IDF pada kolom
+            tfidf_matrix_inp = tfidf_vectorizer.fit_transform([inp])
+            # Membuat DataFrame dari hasil TF-IDF
+            tfidf_inp_df = pd.DataFrame(tfidf_matrix_inp.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
+            st.info("#### TFIDF")
+            st.write(tfidf_inp_df)
+            vsm_inp = tfidf_inp_df
+
+#     #     ============== LDA inp =========
+        alpha_inp = 0.1
+        beta_inp = 0.2
+
+        lda_model_inp = LatentDirichletAllocation(n_components=k_best, doc_topic_prior=alpha_inp, topic_word_prior=beta_inp)
+        # Proporsi topik pada dokumen
+        proporsi_topik_dokumen_inp = lda_model_inp.fit_transform(vsm_inp)
+        # st.write("ini teks hasil inputan")
+        # st.write(proporsi_topik_dokumen_inp)
+
+        # simpan kolom
+        topik_kolom_inp = []
+
+        for i in range(1, k_best+1):
+            topik_kolom_inp.append(f'Topik {i}')
+        # st.write("kolom input")
+        # st.write(topik_kolom_inp)
+    # ====================== topik pd dokumen =========
+        inp_proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen_inp, columns=topik_kolom_inp)
+        # proporsi_topik_dokumen_df.insert(0,'stemmed_tokens', abstrak)
+        st.info("Proporsi Topik pada Dokumen")
+        st.write(inp_proporsi_topik_dokumen_df)
+
+#     # ===================== kata pada topik ==========
+    # Proporsi kata pada topik
+        inp_fitur = vsm_inp.columns.tolist()
+        ProporsiKataTopik_inp = lda_model_inp.components_
+        inp_ProporsiKataTopik_df = pd.DataFrame(ProporsiKataTopik_inp, columns=inp_fitur)
+        inp_ProporsiKataTopik_df.insert(0, 'Topik', topik_kolom_inp)
+        st.warning("Proporsi kata pada Topik")
+        st.write(inp_ProporsiKataTopik_df)
+#
+#         ========= di model lagi ==========
+ # ================= create model ==============
+        # Loop untuk setiap iterasi topik
+        # Data yang Anda miliki
+        X_new = proporsi_topik_dokumen_df_new.iloc[:, :k_best]  # Mengambil hanya kolom-kolom topik pertama hingga ke-k
+        y_new = proporsi_topik_dokumen_df['Label']
+        label_encode = LabelEncoder()
+        y_new = label_encode.fit_transform(y)
+
+        max_acc_nb_inp, best_topic_nb_inp, accuracies_nb_inp, eval_nb_inp, model_nb_inp = train_and_evaluate_model(X_new, y_new, k_best,
+                                                                                               'Naive Bayes')
+        max_acc_knn_inp, best_topic_knn_inp, accuracies_knn_inp, eval_knn_inp, model_knn_inp = train_and_evaluate_model(X_new, y_new, k_best, 'KNN')
+        max_acc_rf_inp, best_topic_rf_inp, accuracies_rf_inp, eval_rf_inp, model_rf_inp = train_and_evaluate_model(X_new, y_new, k_best, 'Random Forest')
+
+        if accuracies_knn < accuracies_nb > accuracies_rf:
+            best_model = model_nb_inp['Naive Bayes']
+        elif accuracies_nb < accuracies_knn > accuracies_rf:
+            best_model = model_knn_inp['KNN']
+        else:
+            best_topik = best_topic_rf
+            best_model = model_rf_inp['Random Forest']
+
+# # ===========  predict =========
+        # Mendapatkan model terbaik dari kamus models
+        # st.write(best_model)
+        # Lakukan prediksi
+        predict_inp = best_model.predict(inp_proporsi_topik_dokumen_df)
+        st.write(predict_inp)
+        if predict_inp == 0:
+            st.success("Hasil Prediksi dari Kalimat yang diinputkan menunjukkan : ")
+            st.success("KK")
+        else:
+            st.success("Hasil Prediksi dari Kalimat yang diinputkan menunjukkan : ")
+            st.success("RPL")
+
+
