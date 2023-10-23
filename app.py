@@ -315,9 +315,6 @@ else:
             st.dataframe(tfidf)
 
 
-
-
-
 # =========================== LDA ===============================
     with lda:
         # requirements
@@ -420,61 +417,61 @@ else:
     # =========================== Implementasi ===============================
     with implementasi:
         st.write("# Implementasi")
-        st.info(f"Dalam implementasi akan digunakan metode yang paling tinggi akurasinya (dalam evaluasi) yaitu: metode Random Forest, dan menggunakan {best_topik_rf} Topik")
+        st.info(f"Dalam implementasi akan digunakan metode yang paling tinggi akurasinya (dalam evaluasi) yaitu: metode Random Forest dan menggunakan {best_topik_rf} Topik")
         inp = st.text_input("Masukkan abstrak")
         st.warning(f"VSM yang digunakan yaitu TFIDF")
 
-        if inp == None:
-            st.stop()
+        if st.button("Calculate"):
 
-# ============== tf-idf ============
-        # Melakukan transformasi TF-IDF pada kolom
-        tfidf_vectorizer = TfidfVectorizer()
-        tfidf_matrix_inp = tfidf_vectorizer.fit_transform([inp])
-        # Membuat DataFrame dari hasil TF-IDF
-        tfidf_inp_df = pd.DataFrame(tfidf_matrix_inp.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
-        st.info("Vectorizer TFIDF")
-        st.dataframe(tfidf_inp_df)
+    # ============== tf-idf ============
+            # Melakukan transformasi TF-IDF pada kolom
+            tfidf_vectorizer = TfidfVectorizer()
+            tfidf_matrix_inp = tfidf_vectorizer.fit_transform([inp])
+            # Membuat DataFrame dari hasil TF-IDF
+            tfidf_inp_df = pd.DataFrame(tfidf_matrix_inp.toarray(), columns=tfidf_vectorizer.get_feature_names_out())
+            st.info("Vectorizer TFIDF")
+            st.dataframe(tfidf_inp_df)
 
-#   ============== LDA inp =========
-        lda_model_inp = joblib.load("lda_model.pkl")
-        # Proporsi topik pada dokumen
-        proporsi_topik_dokumen_inp = lda_model_inp.fit_transform(tfidf_inp_df)
+    #   ============== LDA inp =========
+            lda_model_inp = joblib.load("lda_model.pkl")
+            # Proporsi topik pada dokumen
+            proporsi_topik_dokumen_inp = lda_model_inp.fit_transform(tfidf_inp_df)
 
-        # simpan kolom
-        topik_kolom_inp = []
+            # simpan kolom
+            topik_kolom_inp = []
 
-        for i in range(1, 8+1):
-            topik_kolom_inp.append(f'Topik {i}')
-        # st.write("kolom input")
-        # st.write(topik_kolom_inp)
-# ====================== topik pd dokumen =========
-        inp_proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen_inp, columns=topik_kolom_inp)
-        # proporsi_topik_dokumen_df.insert(0,'stemmed_tokens', abstrak)
-        st.info("Proporsi Topik pada Dokumen")
-        st.write(inp_proporsi_topik_dokumen_df)
+            for i in range(1, 8+1):
+                topik_kolom_inp.append(f'Topik {i}')
+            # st.write("kolom input")
+            # st.write(topik_kolom_inp)
+    # ====================== topik pd dokumen =========
+            inp_proporsi_topik_dokumen_df = pd.DataFrame(proporsi_topik_dokumen_inp, columns=topik_kolom_inp)
+            # proporsi_topik_dokumen_df.insert(0,'stemmed_tokens', abstrak)
+            st.info("Proporsi Topik pada Dokumen")
+            st.write(inp_proporsi_topik_dokumen_df)
 
-#     # ===================== kata pada topik ==========
-    # Proporsi kata pada topik
-        inp_fitur = tfidf_inp_df.columns.tolist()
-        ProporsiKataTopik_inp = lda_model_inp.components_
-        inp_ProporsiKataTopik_df = pd.DataFrame(ProporsiKataTopik_inp, columns=inp_fitur)
-        inp_ProporsiKataTopik_df.insert(0, 'Topik', topik_kolom_inp)
-        st.warning("Proporsi kata pada Topik")
-        st.write(inp_ProporsiKataTopik_df)
+    #     # ===================== kata pada topik ==========
+        # Proporsi kata pada topik
+            inp_fitur = tfidf_inp_df.columns.tolist()
+            ProporsiKataTopik_inp = lda_model_inp.components_
+            inp_ProporsiKataTopik_df = pd.DataFrame(ProporsiKataTopik_inp, columns=inp_fitur)
+            inp_ProporsiKataTopik_df.insert(0, 'Topik', topik_kolom_inp)
+            st.warning("Proporsi kata pada Topik")
+            st.write(inp_ProporsiKataTopik_df)
 
-# ===========  predict =========
-        # Mendapatkan model terbaik dari kamus models
-        best_model = joblib.load("rf_model_imp.pkl")
-        # st.write(best_model)
-        # Lakukan prediksi
-        # predict_inp = best_model.predict(inp_proporsi_topik_dokumen_df)
-        # st.write(predict_inp)
-        # if predict_inp == "KK":
-        #     st.success("Hasil Prediksi dari Kalimat yang diinputkan menunjukkan : ")
-        #     st.success("KK")
-        # else:
-        #     st.success("Hasil Prediksi dari Kalimat yang diinputkan menunjukkan : ")
-        #     st.success("RPL")
+    # ===========  predict =========
+
+            # Mendapatkan model terbaik dari kamus models
+            best_model = joblib.load("rf_model_imp.pkl")
+            # st.write(best_model)
+            # Lakukan prediksi
+            predict_inp = best_model.predict(inp_proporsi_topik_dokumen_df)
+            # st.write(predict_inp)
+            if predict_inp == "KK":
+                st.success("Hasil Prediksi dari Kalimat yang diinputkan menunjukkan : ")
+                st.success("KK")
+            else:
+                st.success("Hasil Prediksi dari Kalimat yang diinputkan menunjukkan : ")
+                st.success("RPL")
 
 
