@@ -84,7 +84,7 @@ else:
             # Menyusun URL berdasarkan variabel place dan number
             url = f'https://pta.trunojoyo.ac.id/c_search/{place}/{number}/'
 
-            # Tombol untuk mulai crawling
+    # ============ button crawling =====================
             if st.button("Mulai Crawling"):
                 datas = []
                 for ipages in range(1, k+1):
@@ -95,8 +95,6 @@ else:
                         break  # Menghentikan iterasi jika tidak ada lagi data yang ditemukan
                     for items in pages:
                         # Mengambil abstrak dari teks di dalam tag <p> dengan atribut 'align' = 'justify'
-
-        # ======= mencari abstrak ========
                         button_abstrak_pages = items.find('a', 'gray button').get(
                             'href')  # setiap iterasi list pages mencari <a> ambil link href
                         response_abstrak_pages = requests.get(
@@ -187,31 +185,7 @@ else:
                 st.write(data_kosong)
                 st.warning("###### terdapat data kosong pada masing-masing kolom, harus clean data!!!")
 
-            # if st.button('Unduh Data'):
-            #     st.text('Sedang mengunduh data...')
-            #
-            #     # Mengunduh data dari Google Drive
-            #     output = gdown.download(url, quiet=False)
-            #
-            #     st.text('Data telah berhasil diunduh!')
-            #
-            #     # Membaca data dari file yang diunduh dan menyimpannya dalam DataFrame
-            #     data = pd.read_csv(output)
-            #     # Menampilkan data
-            #     st.header('Data yang Telah Diunduh')
-            #     st.write(data)
-            #
-            # #     ============ download
-            #     data_label = pd.DataFrame(data)
-            #     csv_file = data_label.to_csv(index=False)
-            #     csv_bytes = csv_file.encode()
-            #     st.download_button(
-            #         label="Unduh Data sebagai CSV",
-            #         data=csv_bytes,
-            #         file_name="data_crawling_labels.csv",
-            #         mime="text/csv",
-            #     )
-
+# ======== cleanned ===================
         with cleaned:
         # Tombol untuk menghapus data NaN dari kolom "Abstrak"
             st.info("#### Data sudah dibersihkan")
@@ -225,7 +199,7 @@ else:
                 data_kosong = data.isna().sum()
                 st.write(data_kosong)
 
- # ======== cleanned ===================
+
 # ============ Punctuation ===========
             st.info("#### Punctuation")
             data['clean_abstrak'] = data['Abstrak'].str.replace(r'[^\w\s]', '', regex=True).str.lower()
